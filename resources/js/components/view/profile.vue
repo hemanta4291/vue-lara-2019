@@ -175,21 +175,21 @@
                         <label for="inputName" class="col-sm-2 control-label">Name</label>
 
                         <div class="col-sm-10">
-                          <input type="email" class="form-control" id="inputName" placeholder="Name">
+                          <input type="email" v-model="form.name" class="form-control" id="inputName" >
                         </div>
                       </div>
                       <div class="form-group">
                         <label for="inputEmail" class="col-sm-2 control-label">Email</label>
 
                         <div class="col-sm-10">
-                          <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+                          <input type="email" v-model="form.email" class="form-control" id="inputEmail" placeholder="Email">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label for="inputName2" class="col-sm-2 control-label">Name</label>
+                        <label for="inputName2" class="col-sm-2 control-label">picture</label>
 
                         <div class="col-sm-10">
-                          <input type="text" class="form-control" id="inputName2" placeholder="Name">
+                          <input type="file" @change="checkpicture" class="form-control" id="inputName2">
                         </div>
                       </div>
                       <div class="form-group">
@@ -200,10 +200,10 @@
                         </div>
                       </div>
                       <div class="form-group">
-                        <label for="inputSkills" class="col-sm-2 control-label">Skills</label>
+                        <label for="inputSkills" class="col-sm-2 control-label">Password</label>
 
                         <div class="col-sm-10">
-                          <input type="text" class="form-control" id="inputSkills" placeholder="Skills">
+                          <input type="password" v-model="form.password" class="form-control" id="inputSkills" placeholder="Skills">
                         </div>
                       </div>
                       <div class="form-group">
@@ -217,7 +217,7 @@
                       </div>
                       <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                          <button type="submit" class="btn btn-danger">Submit</button>
+                          <button @click.prevent="updateinfo" type="submit" class="btn btn-danger">Update</button>
                         </div>
                       </div>
                     </form>
@@ -251,6 +251,40 @@
          created() {
             axios.get("api/profile")
             .then(({ data }) => (this.form.fill(data)));
+        },
+        methods:{
+            checkpicture(e){
+              let file = e.target.files[0];
+              let render = new FileReader()
+
+              console.log(file);
+
+              let limit = 1024 * 1024 * 2
+              
+                if( file['size']< limit){
+                    render.onloadend =(file)=>{
+                   this.form.photo = render.result;
+                    }
+                  render.readAsDataURL(file);
+                }else{
+                    Swal.fire(
+                            'Not Updated!',
+                            'you are uploading... gather then 2 mb size picture',
+                            'error' )
+                }
+
+
+            },
+            updateinfo(){
+              this.$Progress.start();
+              this.form.put("api/profile")
+              .then(()=>{
+                this.$Progress.finish();
+              })
+              .catch(()=>{
+                this.$Progress.fail();
+              })
+            }
         },
         mounted() {
             console.log(this.form)

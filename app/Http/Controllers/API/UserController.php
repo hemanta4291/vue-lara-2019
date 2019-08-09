@@ -6,11 +6,17 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\User;
+use Image;
 use Illuminate\Support\Facades\Hash;
-
+use App\User;
 class UserController extends Controller
 {
+
+
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -27,6 +33,37 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    
+
+    public function updateProfile(Request $request)
+    {
+       $user = auth('api')->user();
+
+
+       $this->validate($request,[
+        'name' => 'required|string|max:191',
+        'email' => 'required|string|email|max:191|unique:users,email,'.$user->id,
+        'password' => 'sometimes|required|min:6'
+        ]);
+       //return $request->photo;
+       $currentphoto = $user->photo;
+
+       if($request->photo != $currentphoto){
+        $name = time().'.' . explode('/', explode(':', substr($request->photo, 0, strpos($request->photo, ';')))[1])[1];
+
+        \Image::make($request->photo)->save(public_path('img/profile/').$name);
+
+        $request->merge(['photo' => $name]);
+
+        // $userPhoto = public_path('img/profile/').$currentPhoto;
+        // if(file_exists($userPhoto)){
+        //     @unlink($userPhoto);
+        }
+
+        $user->update($request->all());
+
+    }
+
     public function store(Request $request)
     {
         $this->validate($request,[
