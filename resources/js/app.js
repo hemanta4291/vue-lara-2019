@@ -24,6 +24,9 @@ Vue.use(VueProgressBar, {
 
 window.VueProgressBar = VueProgressBar;
 
+//pagination
+Vue.component('pagination', require('laravel-vue-pagination'));
+
 //sweet alert 
 import Swal from 'sweetalert2'
 window.Swal = Swal

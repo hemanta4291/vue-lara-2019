@@ -9,7 +9,7 @@
                         <h5 class="widget-user-desc" style="color">Web Designer</h5>
                     </div>
                     <div class="widget-user-image">
-                        <img class="img-circle" src="/img/admin.png" alt="User Avatar">
+                        <img class="img-circle" :src="avater()" alt="User Avatar">
                     </div>
                     <div class="card-footer">
                         <div class="row">
@@ -175,14 +175,16 @@
                         <label for="inputName" class="col-sm-2 control-label">Name</label>
 
                         <div class="col-sm-10">
-                          <input type="email" v-model="form.name" class="form-control" id="inputName" >
+                          <input type="email" v-model="form.name" class="form-control" id="inputName" :class="{ 'is-invalid': form.errors.has('name') }">
+                          <has-error :form="form" field="name"></has-error>
                         </div>
                       </div>
                       <div class="form-group">
                         <label for="inputEmail" class="col-sm-2 control-label">Email</label>
 
                         <div class="col-sm-10">
-                          <input type="email" v-model="form.email" class="form-control" id="inputEmail" placeholder="Email">
+                          <input type="email" v-model="form.email" class="form-control" id="inputEmail" placeholder="Email" :class="{ 'is-invalid': form.errors.has('email') }">
+                          <has-error :form="form" field="email"></has-error>
                         </div>
                       </div>
                       <div class="form-group">
@@ -203,7 +205,7 @@
                         <label for="inputSkills" class="col-sm-2 control-label">Password</label>
 
                         <div class="col-sm-10">
-                          <input type="password" v-model="form.password" class="form-control" id="inputSkills" placeholder="Skills">
+                          <input type="password" v-model="form.password" class="form-control" id="inputSkills" placeholder="Skills" :class="{ 'is-invalid': form.errors.has('password') }">
                         </div>
                       </div>
                       <div class="form-group">
@@ -253,6 +255,10 @@
             .then(({ data }) => (this.form.fill(data)));
         },
         methods:{
+          avater(){
+            let photo = (this.form.photo.length>200)?this.form.photo : "/img/profile/"+this.form.photo;
+            return photo;
+          },
             checkpicture(e){
               let file = e.target.files[0];
               let render = new FileReader()
@@ -279,6 +285,7 @@
               this.$Progress.start();
               this.form.put("api/profile")
               .then(()=>{
+                Fire.$emit('reloaded');
                 this.$Progress.finish();
               })
               .catch(()=>{

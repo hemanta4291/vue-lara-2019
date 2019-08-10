@@ -24,7 +24,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::latest()->paginate(10);
+        return User::latest()->paginate(5);
     }
 
     /**
@@ -55,12 +55,18 @@ class UserController extends Controller
 
         $request->merge(['photo' => $name]);
 
-        // $userPhoto = public_path('img/profile/').$currentPhoto;
-        // if(file_exists($userPhoto)){
-        //     @unlink($userPhoto);
+            $userPhoto = public_path('img/profile/').$currentphoto;
+            if(file_exists($userPhoto)){
+                @unlink($userPhoto);
+             }
+        }
+
+        if(!empty($request->password)){
+            $request->merge(['password' => Hash::make($request['password'])]);
         }
 
         $user->update($request->all());
+        //return ['massage'=> 'user success'];
 
     }
 

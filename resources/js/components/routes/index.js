@@ -2,6 +2,7 @@ import dashboard from '../view/dashboard'
 import profile from '../view/profile'
 import users from '../view/users'
 import developer from '../view/developer'
+import notfound from '../view/notfound'
 export const routes=[
     {
         path:'/dashboard',
@@ -18,5 +19,9 @@ export const routes=[
     {
         path:'/developer',
         component:developer
+    },
+    {
+        path:'*',
+        component:notfound
     }
 ]
